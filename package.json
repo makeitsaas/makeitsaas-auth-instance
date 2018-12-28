@@ -1,0 +1,27 @@
+{
+  "name": "makeitsaas-auth-instance",
+  "version": "1.0.0",
+  "description": "JWT and JWK service",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Duwab/makeitsaas-auth-instance.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Duwab/makeitsaas-auth-instance/issues"
+  },
+  "homepage": "https://github.com/Duwab/makeitsaas-auth-instance#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "fs": "0.0.1-security",
+    "jsonwebtoken": "^8.4.0",
+    "jwk-to-pem": "^2.0.1",
+    "request": "^2.88.0",
+    "rsa-pem-to-jwk": "^1.1.3"
+  }
+}
