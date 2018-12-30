@@ -20,6 +20,9 @@ require('./src/get-keys').then(({privateKey, publicKey, jwk}) => {
   app.get('/log-me', (req, res) => res.send({jwt: token}))
   app.get('/verify', (req, res) => jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (err, payload) => res.send({err, payload})))
   app.get('/verify-remote', (req, res) => jwt.verify(token, getRemoteKey, {}, (err, decoded) => res.send({err, decoded})))
+}).catch(err => {
+  console.log('initialization error')
+  console.log(err)
 });
 
 // const verifyWithRemoteKey(token) = new Promise((resolve, reject) => {})

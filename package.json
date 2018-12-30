@@ -22,6 +22,7 @@
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.4.0",
     "jwk-to-pem": "^2.0.1",
+    "node-genrsa": "^1.0.3",
     "request": "^2.88.0",
     "rsa-pem-to-jwk": "^1.1.3"
   }
