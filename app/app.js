@@ -13,18 +13,19 @@ const jwkToPem = require('jwk-to-pem')
 
 // ajouter la clé au départ si n'existe pas / via conf env
 require('./src/get-keys').then(({privateKey, publicKey, jwk}) => {
-  var token = jwt.sign({ foo: 'bar' }, privateKey, { algorithm: 'RS256'});
+  var token = jwt.sign({ user: {uuid: '123412341234-1234-1234-1234-123412341234', roles: ['admin']} }, privateKey, { algorithm: 'RS256'});
 
   app.get('/', (req, res) => res.send('Hello World!'))
-  app.get('/jwks.json', (req, res) => {res.send(jwk)})
+  app.get('/jwks.json', (req, res) => {res.send({keys: [jwk]})})
   app.get('/log-me', (req, res) => res.send({jwt: token}))
   app.get('/verify', (req, res) => jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (err, payload) => res.send({err, payload})))
   app.get('/verify-remote', (req, res) => jwt.verify(token, getRemoteKey, {}, (err, decoded) => res.send({err, decoded})))
 });
 
+// const verifyWithRemoteKey(token) = new Promise((resolve, reject) => {})
 const getRemoteKey = (header, callback) => {
   request(PUBLIC_JWK_URL, { json: true }, (err, res, body) => {
-    const remoteJwk = body;
+    const remoteJwk = body && body.keys && body.keys[0];
     if (err || !remoteJwk) {
       callback(err);
     } else {
