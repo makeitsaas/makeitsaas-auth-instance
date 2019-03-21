@@ -2,6 +2,24 @@ require('dotenv').config();
 const express = require('express')
 const app = express()
 const port = process.env.PORT;
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// **********
+var passport = require('passport');
+var db = require('../database');
+
+app.post('/login', function(req, res) {
+  if (!req.body) return res.sendStatus(400);
+  db.users.findByUsername(req.body.username, (err, user) => {
+    res.send(user);
+  })
+});
+
+// **********
+
 
 // JWT: sign/verify
 const jwt = require('jsonwebtoken');
