@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Duwab/makeitsaas-auth-instance#readme",
   "dependencies": {
+    "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.4.0",

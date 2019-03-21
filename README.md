@@ -5,6 +5,14 @@ Todo:
 - implement authentification
 - explain getting started, use cases
 
+## Install
+
+```
+npm install
+cp .env.dist .env
+npm start
+```
+
 
 ## Generate certificate
 
