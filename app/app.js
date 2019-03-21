@@ -11,12 +11,30 @@ app.use(bodyParser.json());
 var passport = require('passport');
 var db = require('../database');
 
+app.use(passport.initialize());
+
 app.post('/login', function(req, res) {
-  if (!req.body) return res.sendStatus(400);
-  db.users.findByUsername(req.body.username, (err, user) => {
-    res.send(user);
-  })
+    if (!req.body) return res.sendStatus(400);
+    db.users.findByUsername(req.body.username, (err, user) => {
+        res.send(user);
+    })
 });
+
+require('./strategies/github/routes')(app);
+
+/*
+
+  1. test local strategy with callback
+    return passport.authenticate('local-signup', (error, user, info) => {
+        if (error) return res.status(400).json({ message: info });
+        if (user) return res.status(200).json({ message: info });
+        return res.status(401).json({ message: info });
+    }
+
+  2. Github social auth
+    https://mherman.org/blog/social-authentication-in-node-dot-js-with-passport/
+
+*/
 
 // **********
 
@@ -32,29 +50,29 @@ const jwkToPem = require('jwk-to-pem')
 
 // ajouter la clé au départ si n'existe pas / via conf env
 require('./src/get-keys').then(({privateKey, publicKey, jwk}) => {
-  var token = jwt.sign({ user: {uuid: '123412341234-1234-1234-1234-123412341234', roles: ['admin']} }, privateKey, { algorithm: 'RS256'});
+    var token = jwt.sign({ user: {uuid: '123412341234-1234-1234-1234-123412341234', roles: ['admin']} }, privateKey, { algorithm: 'RS256'});
 
-  app.get('/', (req, res) => res.send('Hello World!'))
-  app.get('/jwks.json', (req, res) => {res.send({keys: [jwk]})})
-  app.get('/log-me', (req, res) => res.send({jwt: token}))
-  app.get('/verify', (req, res) => jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (err, payload) => res.send({err, payload})))
-  app.get('/verify-remote', (req, res) => jwt.verify(token, getRemoteKey, {}, (err, decoded) => res.send({err, decoded})))
+    app.get('/', (req, res) => res.send('Hello World!'))
+    app.get('/jwks.json', (req, res) => {res.send({keys: [jwk]})})
+    app.get('/log-me', (req, res) => res.send({jwt: token}))
+    app.get('/verify', (req, res) => jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (err, payload) => res.send({err, payload})))
+    app.get('/verify-remote', (req, res) => jwt.verify(token, getRemoteKey, {}, (err, decoded) => res.send({err, decoded})))
 }).catch(err => {
-  console.log('initialization error')
-  console.log(err)
+    console.log('initialization error')
+    console.log(err)
 });
 
 // const verifyWithRemoteKey(token) = new Promise((resolve, reject) => {})
 const getRemoteKey = (header, callback) => {
-  request(PUBLIC_JWK_URL, { json: true }, (err, res, body) => {
-    const remoteJwk = body && body.keys && body.keys[0];
-    if (err || !remoteJwk) {
-      callback(err);
-    } else {
-      const key = jwkToPem(remoteJwk);
-      callback(null, key);
-    }
-  });
+    request(PUBLIC_JWK_URL, { json: true }, (err, res, body) => {
+        const remoteJwk = body && body.keys && body.keys[0];
+        if (err || !remoteJwk) {
+            callback(err);
+        } else {
+            const key = jwkToPem(remoteJwk);
+            callback(null, key);
+        }
+    });
 }
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
