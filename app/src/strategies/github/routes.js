@@ -1,9 +1,9 @@
-const passportGithub = require('./github');
-
 module.exports = function(app) {
-    app.get('/auth/github', passportGithub.authenticate('github', { scope: [ 'user:email' ] }));
+    const passportGithub = require('./github')(app);
 
-    app.get('/auth/github/callback',
+    app.get('/oauth/github', passportGithub.authenticate('github', { scope: [ 'user:email' ] }));
+
+    app.get('/oauth/github/callback',
         passportGithub.authenticate('github', { session:false }),
         function(req, res) {
             // Successful authentication
