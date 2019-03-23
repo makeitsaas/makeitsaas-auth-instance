@@ -2,7 +2,9 @@ const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 
 module.exports = app => {
-    console.log(app.config.oauthProviders.github.getConfig());
+    if(!app.config.oauthProviders.github.getConfig().clientID)
+        return;
+    //console.log(app.config.oauthProviders.github.getConfig());
     passport.use(new GitHubStrategy(app.config.oauthProviders.github.getConfig(),
         (accessToken, refreshToken, profile, next) => {
             console.log('[OAuth] Github response ******************************');
