@@ -7,11 +7,6 @@ module.exports = app => {
     //console.log(app.config.oauthProviders.github.getConfig());
     passport.use(new GitHubStrategy(app.config.oauthProviders.github.getConfig(),
         (accessToken, refreshToken, profile, next) => {
-            console.log('[OAuth] Github response ******************************');
-            console.log('accessToken', accessToken);
-            console.log('refreshToken', refreshToken);
-            console.log(profile);
-            console.log('[OAuth] Github response end***************************');
 
             const githubId = profile && profile.id;
 

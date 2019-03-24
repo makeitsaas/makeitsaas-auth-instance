@@ -5,7 +5,14 @@ const {getRemoteKey} = require('./jwt-remote');
 module.exports = function(app, privateKey, publicKey) {
     app.jwt = {
         sign: (user) => {
-            return jwt.sign({ user: {id: user.id, roles: []} }, privateKey, { algorithm: 'RS256'});
+            return jwt.sign(
+                { user: {id: user.id, displayName: 'Some user', roles: []} },
+                privateKey,
+                {
+                    algorithm: 'RS256',
+                    expiresIn: '365 days'
+                }
+            );
         },
         verify: (token, callback) => {
             jwt.verify(token, publicKey, { algorithms: ['RS256'] }, callback);
