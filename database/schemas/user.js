@@ -67,7 +67,9 @@ module.exports = function(sequelize, DataTypes) {
     User.prototype.getPublicInfos = function() {
         return {
             id: this.id,
-            displayName: this.display_name
+            username: this.username,
+            displayName: this.display_name,
+            verified: this.verified
         }
     };
 
