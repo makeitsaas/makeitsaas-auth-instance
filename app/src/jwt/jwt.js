@@ -6,7 +6,7 @@ module.exports = function(app, privateKey, publicKey) {
     app.jwt = {
         sign: (user) => {
             return jwt.sign(
-                { user: {id: user.id, displayName: 'Some user', roles: []} },
+                { user: {id: user.id, displayName: user.displayName, verified: user.verified, roles: []} },
                 privateKey,
                 {
                     algorithm: 'RS256',

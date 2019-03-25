@@ -2,52 +2,43 @@ const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 
 module.exports = app => {
-    if(!app.config.oauthProviders.github.getConfig().clientID)
+    const githubConfig = app.config.oauthProviders.github.getConfig(),
+        githubProviderCode = app.config.oauthProviders.github.code;
+    if(!githubConfig.clientID)
         return;
-    //console.log(app.config.oauthProviders.github.getConfig());
-    passport.use(new GitHubStrategy(app.config.oauthProviders.github.getConfig(),
-        (accessToken, refreshToken, profile, next) => {
 
-            const githubId = profile && profile.id;
+    passport.use(new GitHubStrategy(githubConfig, (accessToken, refreshToken, profile, next) => {
+        const githubId = profile && profile.id,
+            githubDisplayName = profile && profile.displayName;
 
-            // si token
-            //   chopper l'email côté github
-            //   regarder si user avec githubId comme String(providerId)
-            //   si aucun et mais un avec l'email, alors ajouter ça à cet utilisateur
-            //   si aucun et aucun avec l'email, alors créer un user, vérifié, avec les informations du profile
-            app.models.accessToken.create({
-                user_id: 3,
-                token: accessToken,
-                provider: app.config.oauthProviders.github.code
-            }).then(storedToken => {
-                next(null, storedToken);
-            }).catch(err => {
-                next(err);
-            });
-            /*var searchQuery = {
-                name: profile.displayName
-            };
-
-            var updates = {
-                name: profile.displayName,
-                someID: profile.id
-            };
-
-            var options = {
-                upsert: true
-            };
-
-            // update the user if s/he exists or add a new user
-            User.findOneAndUpdate(searchQuery, updates, options, function(err, user) {
-                if(err) {
-                    return done(err);
-                } else {
-                    return done(null, user);
-                }
-            });*/
+        if(!githubId || !accessToken) {
+            next('Missing github variables');
         }
 
-    ));
+        app.models.accessToken.create({
+            owner_id: githubId,
+            token: accessToken,
+            provider: app.config.oauthProviders.github.code
+        }).then(() => {
+            // token saved successfully
+            return app.models.oauthResourceOwner.isOwnerRegistered(githubId, githubProviderCode)
+        }).then((registeredUser) => {
+            // is user already registered with this strategy ?
+            if(registeredUser) {
+                return registeredUser;
+            } else {
+                // owner is not registered here
+                // NOTE : later try to fetch email from Resource server, then compare with existing emails
+                return app.models.user
+                    .createFromResourceOwner(githubId, githubProviderCode, githubDisplayName)
+                    .then(user => user);
+            }
+        }).then(user => {
+            next(null, user);
+        }).catch(err => {
+            next(err);
+        });
+    }));
 
     return passport;
 };

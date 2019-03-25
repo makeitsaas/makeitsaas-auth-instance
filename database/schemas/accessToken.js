@@ -1,14 +1,14 @@
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define('accessToken', {
-        user_id: {
-            type: DataTypes.BIGINT,
-            allowNull: false
-        },
-        token: {
+        owner_id: {
             type: DataTypes.STRING,
             allowNull: false,
         },
         provider: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        token: {
             type: DataTypes.STRING,
             allowNull: false,
         }

@@ -1,17 +1,27 @@
 module.exports = function(app) {
 
-    app.post('/oauth/local', (req, res) => {
-        createUser(req.body.username, req.body.password)
-            .then(user => res.send(user))
-            .catch(error => {
-                if(error.name === "SequelizeUniqueConstraintError") {
-                    res.status(400) && res.send({message: "User name already exists"})
-                } else {
-                    console.error(error);
-                    res.status(500) && res.send({message: error.name})
-                }
-            });
-    });
+    app.post('/signup',
+        (req, res, next) => {
+            if(/^MAKEITTEST$/i.test(req.body.code)) {
+                next();
+            } else {
+                res.status(401).send({
+                    message: 'Wrong invitation code'
+                });
+            }
+        },
+        (req, res) => {
+            createUser(req.body.username, req.body.password)
+                .then(user => res.send(user))
+                .catch(error => {
+                    if(error.name === "SequelizeUniqueConstraintError") {
+                        res.status(400) && res.send({message: "User name already exists"})
+                    } else {
+                        console.error(error);
+                        res.status(500) && res.send({message: error.name})
+                    }
+                });
+        });
 
     app.post('/login', function(req, res) {
         if (!req.body) return res.sendStatus(400);
@@ -24,7 +34,6 @@ module.exports = function(app) {
             } else {
                 res.send({
                     token: app.jwt.sign(user)
-                    //access_token: app.jwt.sign(user)
                 });
             }
         }).catch(error => {

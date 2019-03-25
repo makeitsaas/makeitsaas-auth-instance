@@ -7,7 +7,9 @@ module.exports = function(app) {
             passportGithub.authenticate('github', { session:false }),
             function(req, res) {
                 // Successful authentication
-                res.json(req.user);
+                res.json({
+                    token: app.jwt.sign(req.user)
+                });
             });
     } else {
         console.log('github strategy not configured');
