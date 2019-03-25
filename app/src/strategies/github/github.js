@@ -12,7 +12,7 @@ module.exports = app => {
             githubDisplayName = profile && profile.displayName;
 
         if(!githubId || !accessToken) {
-            next('Missing github variables');
+            next(new Error('Missing github variables'));
         }
 
         app.models.accessToken.create({
