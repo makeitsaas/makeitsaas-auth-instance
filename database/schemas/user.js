@@ -68,7 +68,7 @@ module.exports = function(sequelize, DataTypes) {
         return {
             id: this.id,
             username: this.username,
-            displayName: this.display_name,
+            displayName: this.display_name || this.username,
             verified: this.verified
         }
     };
