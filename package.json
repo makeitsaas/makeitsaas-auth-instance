@@ -23,7 +23,7 @@
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "fs": "0.0.1-security",
-    "jsonwebtoken": "^8.4.0",
+    "jsonwebtoken": "^9.0.0",
     "jwk-to-pem": "^2.0.1",
     "mysql2": "^1.6.5",
     "node-genrsa": "^1.0.3",
